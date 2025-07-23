@@ -1,0 +1,52 @@
+package view
+
+import "secret-h/game"
+import "fmt"
+import "github.com/labstack/echo/v4"
+
+func RenderAfterVotePopup(c echo.Context, result *game.VoteResult) error {
+    return RenderView(c, afterVotePopup(result))
+}
+
+templ afterVotePopup(result *game.VoteResult) {
+    <!-- Popup -->
+    <div id="popup" hx-swap-oob="true">
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm">
+                <div class="text-green-300 mb-4">
+                    <p class="text-lg">> Yes Votes:</p>
+                    <ul class="space-y-1 ml-4">
+                        for _, name := range result.Yes {
+                        <li>> {name}: Yes</li>
+                        }
+                    </ul>
+                    <p class="mt-2">> Total Yes: {len(result.Yes)}</p>
+                </div>
+                <div class="border-t border-green-500/50 my-4"></div>
+                <div class="text-green-300 mb-4">
+                    <p class="text-lg">> No Votes:</p>
+                    <ul class="space-y-1 ml-4">
+                        for _, name := range result.No {
+                            <li>> {name}: No</li>
+                        }
+                    </ul>
+                    <p class="mt-2">> Total No: {len(result.No)}</p>
+                </div>
+                
+               {{
+                    var message string
+                    
+                    if result.Success {
+                        message = fmt.Sprintf("Vote was successfull, %s is now chancelor.", result.PlayerName)
+                    } else {
+                        message = fmt.Sprintf("Vote failed, %s is not chancellor.", result.PlayerName)
+                    }
+                }}
+                <p class="text-green-300 text-lg mb-6 text-center">> {message}</p>
+                <div class="flex justify-center">
+                    <button hx-post="/closePopup" class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> VERSTANDEN !</button>
+                </div>
+            </div>
+        </div>  
+    </div>
+}

@@ -1,0 +1,28 @@
+package view
+
+import "github.com/labstack/echo/v4"
+import "fmt"
+
+templ waitPopup(players []string, gid, originPid, destPid string) {
+    <!-- Popup TODO inner popup-->
+    <div id="popup" hx-swap-oob="true">
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm">
+                <p class="text-green-300 text-lg mb-4 text-center">> Waiting for the following players:</p>
+                <ul class="text-green-300 mb-6 space-y-2">
+                    for _, playerName := range players{
+                    <li>> {playerName}</li>
+                    }
+                </ul>
+                <div class="flex justify-center">
+                    {{ okUrl := fmt.Sprintf("/vote/%s/%s/%s", gid, originPid, destPid) }}
+                    <button hx-post={okUrl} class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> VERSTANDEN !</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+func RenderVoteWaitPopup(c echo.Context, players []string, gid, originPid, destPid string) error {
+    return RenderView(c, waitPopup(players, gid, originPid, destPid))
+}

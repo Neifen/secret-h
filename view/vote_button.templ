@@ -1,0 +1,42 @@
+package view
+
+import (
+    "secret-h/game"
+	"github.com/labstack/echo/v4"
+	"fmt"
+)
+
+templ voteButton(gid, toggled, originPid string, destP *game.Player) {
+
+    {{ 
+        toggle := "yes"
+        if toggled == toggle {
+            toggle = ""
+        }
+        yesUrl := fmt.Sprintf("/make-vote/%s/%s/%s?toggle=%s", gid, originPid, destP.Uid, toggle)
+        
+        toggle = "no"
+        if toggled == toggle {
+            toggle = ""
+        }
+        noUrl := fmt.Sprintf("/make-vote/%s/%s/%s?toggle=%s", gid, originPid, destP.Uid, toggle)
+    }}
+    
+    <div id="vote-buttons" class="flex flex-col gap-4 mb-6">
+        if toggled == "yes" {
+            <button hx-post={yesUrl} hx-swap="outerHTML" hx-target="#vote-buttons" class="bg-green-600 text-black font-bold p-4 rounded-md border-2 border-green-600 hover:bg-green-700 transition-colors text-xl">> JA!</button>
+        } else {
+            <button hx-post={yesUrl} hx-swap="outerHTML" hx-target="#vote-buttons" class="bg-green-500/20 text-green-300 p-4 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors text-xl">> JA!</button>
+        }
+        
+        if toggled == "no" {
+            <button hx-post={noUrl} hx-swap="outerHTML" hx-target="#vote-buttons" class="bg-green-600 text-black font-bold p-4 rounded-md border-2 border-green-600 hover:bg-green-700 transition-colors text-xl">> NEIN!</button>
+        } else {
+            <button hx-post={noUrl} hx-swap="outerHTML" hx-target="#vote-buttons" class="bg-green-500/20 text-green-300 p-4 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors text-xl">> NEIN!</button>
+        }
+    </div>
+}
+
+func RenderVoteButton(c echo.Context,gid, toggled, originPid string, destP *game.Player) error {
+    return RenderView(c, voteButton(gid, toggled, originPid, destP))
+}

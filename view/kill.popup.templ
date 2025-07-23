@@ -1,0 +1,22 @@
+package view
+
+import (
+    "fmt"
+    "secret-h/game"
+)
+
+templ KillPopup(gid string, p *game.Player) {
+    {{confirmUrl := fmt.Sprintf("/kill-confirmed/%s/%s", gid, p.Uid)}}
+    
+    <div id="popup" hx-swap-oob="true">
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm font-['VT323',monospace]">
+                <p class="text-green-300 text-lg mb-6 text-center">> Are you sure you want to kill {p.Name}?</p>
+                <div class="flex justify-center gap-4">
+                    <button hx-post={confirmUrl} class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> JA</button>
+                    <button hx-post="/closePopup" class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> NEIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

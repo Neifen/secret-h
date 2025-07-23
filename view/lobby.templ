@@ -1,0 +1,55 @@
+package view
+
+import (
+    "fmt"
+    "secret-h/game"
+)
+
+
+templ lobby(game *game.Game, thisPlayer *game.Player) {
+    <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30">
+        <h1 class="text-2xl font-bold text-center text-green-400 mb-2 tracking-wider">Secret-H</h1>
+        <p class="text-center text-green-300 mb-6">> Lobby Code: {game.Code}</p>
+    
+        <div class="mb-6">
+            <h2 class="text-lg text-green-300 mb-4">> Players</h2>
+            <ul class="space-y-3">
+                  <li class="flex items-center justify-between bg-gray-700 p-2 rounded-md border-2 border-green-500">
+                    <span class="text-green-300 font-bold">{thisPlayer.Name} (you)</span>
+                    <div class="flex gap-2">
+                        {{ownVoteUrl := fmt.Sprintf("/vote/%s/%s/%s", game.Code, thisPlayer.Uid, thisPlayer.Uid)}}
+                        <button hx-post={ownVoteUrl} hx-swap="none" class="bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">Vote</button>
+                    </div>
+                  </li>
+                            
+                for uid, p := range game.Players {
+                      if uid == thisPlayer.Uid{
+                        {{continue}}
+                      }
+                      
+                     <li class="flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50">
+                        <span class="text-green-300">{p.Name}</span>
+                        <div class="flex gap-2">
+                            {{voteUrl := fmt.Sprintf("/vote/%s/%s/%s", game.Code,thisPlayer.Uid, p.Uid)}}
+                            {{killUrl := fmt.Sprintf("/kill/%s/%s", game.Code, p.Uid)}}
+                            
+                            <button hx-post={voteUrl} hx-swap="none" class="bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">Vote</button>
+                            <button hx-post={killUrl} hx-swap="none" class="bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">Kill</button>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    
+        <div class="text-center">
+            {{confirmUrl := fmt.Sprintf("/leave/%s/%s", game.Code, thisPlayer.Uid)}}
+            <button hx-post={confirmUrl} hx-swap="none" class="text-green-300 text-sm bg-gray-900/50 p-2 rounded-md border border-green-500/30 hover:bg-green-500/20 transition-colors">> Leave Game</button>
+        </div>
+    </div>
+}
+
+templ ViewLobby(game *game.Game, player *game.Player) {
+    @base() {
+        @lobby(game, player)
+    }
+}

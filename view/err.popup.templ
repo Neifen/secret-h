@@ -1,0 +1,26 @@
+package view
+
+import "github.com/labstack/echo/v4"
+
+templ ViewError(err string) {
+    <div id="popup" hx-swap-oob="true">
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm font-['VT323',monospace]">
+                <p class="text-green-300 text-lg mb-6 text-center">> Error: {err}</p>
+                <div class="flex justify-center">
+                    <button hx-post="/closePopup" class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> Zu Befehl !</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+func RenderMessage(c echo.Context, err string) error {
+    return RenderView(c, ViewError(err))
+}
+
+func RenderError(c echo.Context, err error) error {
+    return RenderView(c, ViewError(err.Error()))
+}
+

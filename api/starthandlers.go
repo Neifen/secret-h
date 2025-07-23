@@ -1,0 +1,65 @@
+package api
+
+import (
+	"fmt"
+	"github.com/labstack/echo/v4"
+	"net/http"
+	"secret-h/view"
+)
+
+// e.POST("/start", s.startHandler)
+func (s *Session) startHandler(c echo.Context) error {
+	playerName := c.FormValue("name")
+	if playerName == "" {
+		return view.RenderMessage(c, "Field \"Name\" is a required field")
+	}
+
+	code, p, err := s.gamePool.StartGame(playerName)
+	if err != nil {
+		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+	}
+
+	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
+	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
+	return c.NoContent(http.StatusOK)
+}
+
+// e.POST("/join", s.joinHandler)
+func (s *Session) joinHandler(c echo.Context) error {
+	playerName := c.FormValue("name")
+	if playerName == "" {
+		return view.RenderMessage(c, "Field \"Name\" is a required field")
+	}
+	code := c.FormValue("code")
+
+	p, err := s.gamePool.JoinGame(code, playerName)
+	if err != nil {
+		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+	}
+
+	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
+	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
+	return c.NoContent(http.StatusOK)
+}
+
+// e.POST("/leave", s.leaveHandler)
+func (s *Session) leaveHandler(c echo.Context) error {
+	gid := c.Param("id")
+	pid := c.Param("player")
+
+	return view.RenderView(c, view.LeavePopup(gid, pid))
+}
+
+// e.POST("/leave-confirmed/:id/:player", s.leaveConfirmedHandler)
+func (s *Session) leaveConfirmedHandler(c echo.Context) error {
+	gid := c.Param("id")
+	pid := c.Param("player")
+
+	err := s.gamePool.RemoveFromGame(gid, pid)
+	if err != nil {
+		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+	}
+
+	c.Response().Header().Set("HX-Redirect", "/") //HX-Redirect to home
+	return c.NoContent(http.StatusOK)
+}

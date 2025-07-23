@@ -3,63 +3,12 @@ package api
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"net/http"
 	"secret-h/view"
 )
-
-// e.GET("/", s.homeHandler)
-func (s *Session) homeHandler(c echo.Context) error {
-	c.Response().Header().Set("HX-Refresh", "true")
-	return view.RenderView(c, view.ViewHome())
-}
-
-func redirectHome(c echo.Context) error {
-	if c.Request().Header.Get("Hx-Request") != "true" {
-		return c.Redirect(http.StatusSeeOther, "/")
-	}
-
-	c.Response().Header().Set("HX-Redirect", "/") //HX-Redirect to url
-	return c.NoContent(http.StatusOK)
-}
 
 // e.POST("/closePopup", s.closePopupHandler)
 func (s *Session) closePopupHandler(c echo.Context) error {
 	return view.ClosePopup(c)
-}
-
-// e.POST("/start", s.startHandler)
-func (s *Session) startHandler(c echo.Context) error {
-	playerName := c.FormValue("name")
-	if playerName == "" {
-		return view.RenderMessage(c, "Field \"Name\" is a required field")
-	}
-	
-	code, p, err := s.gamePool.StartGame(playerName)
-	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
-	}
-
-	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
-	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
-	return c.NoContent(http.StatusOK)
-}
-
-// e.POST("/join", s.joinHandler)
-func (s *Session) joinHandler(c echo.Context) error {
-	playerName := c.FormValue("name")
-	if playerName == "" {
-		return view.RenderMessage(c, "Field \"Name\" is a required field")
-	}
-	code := c.FormValue("code")
-
-	p, err := s.gamePool.JoinGame(code, playerName)
-	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
-	}
-
-	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
-	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
-	return c.NoContent(http.StatusOK)
 }
 
 // e.GET("/lobby/:id/:player", s.lobbyHandler)
@@ -80,28 +29,6 @@ func (s *Session) lobbyHandler(c echo.Context) error {
 	}
 
 	return view.RenderView(c, view.ViewLobby(g, p))
-}
-
-// e.POST("/leave", s.leaveHandler)
-func (s *Session) leaveHandler(c echo.Context) error {
-	gid := c.Param("id")
-	pid := c.Param("player")
-
-	return view.RenderView(c, view.LeavePopup(gid, pid))
-}
-
-// e.POST("/leave-confirmed/:id/:player", s.leaveConfirmedHandler)
-func (s *Session) leaveConfirmedHandler(c echo.Context) error {
-	gid := c.Param("id")
-	pid := c.Param("player")
-
-	err := s.gamePool.RemoveFromGame(gid, pid)
-	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
-	}
-
-	c.Response().Header().Set("HX-Redirect", "/") //HX-Redirect to home
-	return c.NoContent(http.StatusOK)
 }
 
 // e.POST("/vote/:id/:originPid/:destPlayer", s.initVoteHandler)

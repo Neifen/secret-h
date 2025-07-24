@@ -3,6 +3,7 @@ package view
 import (
     "fmt"
     "secret-h/game"
+	"github.com/labstack/echo/v4"
 )
 
 
@@ -48,7 +49,11 @@ templ lobby(game *game.Game, thisPlayer *game.Player) {
     </div>
 }
 
-templ ViewLobby(game *game.Game, player *game.Player) {
+func RenderViewLobby(c echo.Context, game *game.Game, player *game.Player) error{
+    return renderView(c, viewLobby(game, player))
+}
+
+templ viewLobby(game *game.Game, player *game.Player) {
     @base() {
         @lobby(game, player)
     }

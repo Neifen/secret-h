@@ -13,7 +13,7 @@ import "fmt"
 import "github.com/labstack/echo/v4"
 
 func RenderAfterVotePopup(c echo.Context, result *game.VoteResult) error {
-	return RenderView(c, afterVotePopup(result))
+	return renderView(c, afterVotePopup(result))
 }
 
 func afterVotePopup(result *game.VoteResult) templ.Component {

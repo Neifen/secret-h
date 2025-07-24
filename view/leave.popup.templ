@@ -1,8 +1,9 @@
 package view
 
 import "fmt"
+import "github.com/labstack/echo/v4"
 
-templ LeavePopup(id, player string) {
+templ leavePopup(id, player string) {
     {{confirmUrl := fmt.Sprintf("/leave-confirmed/%s/%s", id, player)}}
     
     <div id="popup" hx-swap-oob="true">
@@ -16,4 +17,8 @@ templ LeavePopup(id, player string) {
             </div>
         </div>
     </div>
+}
+
+func RenderLeavePopup(c echo.Context, id, player string) error {
+    return renderView(c, leavePopup(id, player))
 }

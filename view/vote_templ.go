@@ -103,7 +103,7 @@ func vote(president bool, gid, toggled, originPid string, destP *game.Player) te
 }
 
 func RenderVote(c echo.Context, president bool, gid, toggled, originPid string, destP *game.Player) error {
-	return RenderView(c, vote(president, gid, toggled, originPid, destP))
+	return renderView(c, vote(president, gid, toggled, originPid, destP))
 }
 
 var _ = templruntime.GeneratedTemplate

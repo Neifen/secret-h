@@ -82,7 +82,7 @@ func waitPopup(players []string, gid, originPid, destPid string) templ.Component
 }
 
 func RenderVoteWaitPopup(c echo.Context, players []string, gid, originPid, destPid string) error {
-	return RenderView(c, waitPopup(players, gid, originPid, destPid))
+	return renderView(c, waitPopup(players, gid, originPid, destPid))
 }
 
 var _ = templruntime.GeneratedTemplate

@@ -8,10 +8,10 @@ import (
 )
 
 func ClosePopup(c echo.Context) error {
-	return RenderView(c, closePopup())
+	return renderView(c, closePopup())
 }
 
-func RenderView(c echo.Context, cmp templ.Component) error {
+func renderView(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
 	if c.Request().Header.Get("HX-Request") != "true" {
@@ -30,5 +30,5 @@ func ReplaceUrl(path string, c echo.Context, cmp templ.Component) error {
 	}
 
 	c.Response().Header().Set("HX-Replace-Url", path)
-	return RenderView(c, cmp)
+	return renderView(c, cmp)
 }

@@ -28,7 +28,7 @@ func (s *Session) lobbyHandler(c echo.Context) error {
 		return redirectHome(c)
 	}
 
-	return view.RenderView(c, view.ViewLobby(g, p))
+	return view.RenderViewLobby(c, g, p)
 }
 
 // e.POST("/vote/:id/:originPid/:destPlayer", s.initVoteHandler)
@@ -39,17 +39,17 @@ func (s *Session) initVoteHandler(c echo.Context) error {
 
 	destPlayer, err := s.gamePool.FindPlayer(gid, destPid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 	originPlayer, err := s.gamePool.FindPlayer(gid, originPid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
 	g := s.gamePool.FindGame(gid)
 	if g == nil {
 		errMsg := fmt.Sprintf("game with id %v does not exist", gid)
-		return view.RenderView(c, view.ViewError(errMsg)) // todo add error to site
+		return view.RenderMessage(c, errMsg)
 	}
 
 	v, err := g.NewVote(originPlayer, destPlayer)
@@ -59,7 +59,7 @@ func (s *Session) initVoteHandler(c echo.Context) error {
 			return view.RenderVote(c, v.OriginPlayer == originPlayer, gid, v.Votes[originPid], originPid, v.DestPlayer)
 		}
 
-		return view.RenderView(c, view.ViewError(err.Error()))
+		return view.RenderError(c, err)
 	}
 
 	// brand new vote
@@ -138,10 +138,10 @@ func (s *Session) initKillHandler(c echo.Context) error {
 	pid := c.Param("player")
 	p, err := s.gamePool.FindPlayer(gid, pid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
-	return view.RenderView(c, view.KillPopup(gid, p))
+	return view.RenderKillPopup(c, gid, p)
 }
 
 // e.POST("/kill-confirmed/:id/:player", s.killConfirmedHandler)
@@ -150,13 +150,13 @@ func (s *Session) killConfirmedHandler(c echo.Context) error {
 	pid := c.Param("player")
 	p, err := s.gamePool.FindPlayer(gid, pid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
 	pName := p.Name
 	err = s.gamePool.RemoveFromGame(gid, pid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
-	return view.RenderView(c, view.KillConfirmPopup(pName))
+	return view.RenderKillConfirmPopup(c, pName)
 }

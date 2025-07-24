@@ -16,7 +16,7 @@ func (s *Session) startHandler(c echo.Context) error {
 
 	code, p, err := s.gamePool.StartGame(playerName)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
 	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
@@ -34,7 +34,7 @@ func (s *Session) joinHandler(c echo.Context) error {
 
 	p, err := s.gamePool.JoinGame(code, playerName)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
 	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
@@ -47,7 +47,7 @@ func (s *Session) leaveHandler(c echo.Context) error {
 	gid := c.Param("id")
 	pid := c.Param("player")
 
-	return view.RenderView(c, view.LeavePopup(gid, pid))
+	return view.RenderLeavePopup(c, gid, pid)
 }
 
 // e.POST("/leave-confirmed/:id/:player", s.leaveConfirmedHandler)
@@ -57,7 +57,7 @@ func (s *Session) leaveConfirmedHandler(c echo.Context) error {
 
 	err := s.gamePool.RemoveFromGame(gid, pid)
 	if err != nil {
-		return view.RenderView(c, view.ViewError(err.Error())) // todo add error to site
+		return view.RenderError(c, err)
 	}
 
 	c.Response().Header().Set("HX-Redirect", "/") //HX-Redirect to home

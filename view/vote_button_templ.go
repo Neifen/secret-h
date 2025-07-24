@@ -134,7 +134,7 @@ func voteButton(gid, toggled, originPid string, destP *game.Player) templ.Compon
 }
 
 func RenderVoteButton(c echo.Context, gid, toggled, originPid string, destP *game.Player) error {
-	return RenderView(c, voteButton(gid, toggled, originPid, destP))
+	return renderView(c, voteButton(gid, toggled, originPid, destP))
 }
 
 var _ = templruntime.GeneratedTemplate

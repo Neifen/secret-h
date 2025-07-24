@@ -53,11 +53,11 @@ func ViewError(err string) templ.Component {
 }
 
 func RenderMessage(c echo.Context, err string) error {
-	return RenderView(c, ViewError(err))
+	return renderView(c, ViewError(err))
 }
 
 func RenderError(c echo.Context, err error) error {
-	return RenderView(c, ViewError(err.Error()))
+	return renderView(c, ViewError(err.Error()))
 }
 
 var _ = templruntime.GeneratedTemplate

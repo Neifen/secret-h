@@ -3,9 +3,10 @@ package view
 import (
     "fmt"
     "secret-h/game"
+	"github.com/labstack/echo/v4"
 )
 
-templ KillPopup(gid string, p *game.Player) {
+templ killPopup(gid string, p *game.Player) {
     {{confirmUrl := fmt.Sprintf("/kill-confirmed/%s/%s", gid, p.Uid)}}
     
     <div id="popup" hx-swap-oob="true">
@@ -19,4 +20,8 @@ templ KillPopup(gid string, p *game.Player) {
             </div>
         </div>
     </div>
+}
+
+func RenderKillPopup(c echo.Context, gid string, p *game.Player) error {
+    return renderView(c, killPopup(gid, p))
 }

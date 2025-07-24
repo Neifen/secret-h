@@ -9,7 +9,7 @@ import (
 // e.GET("/", s.homeHandler)
 func (s *Session) homeHandler(c echo.Context) error {
 	c.Response().Header().Set("HX-Refresh", "true")
-	return view.RenderView(c, view.ViewHome())
+	return view.RenderViewHome(c)
 }
 
 func redirectHome(c echo.Context) error {

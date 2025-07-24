@@ -15,4 +15,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag swissneifen/secret-h:latest
     - name: Push the image to docker hub
-      run: docker push swissneifen/secret-h:latest
+      run: |
+        docker login -u swissneifen -p ${{ secrets.DOCKER_HUB_TOKEN }}
+        docker push swissneifen/secret-h:latest

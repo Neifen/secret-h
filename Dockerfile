@@ -1,9 +1,10 @@
 FROM golang:alpine AS builder
 
+WORKDIR /
 COPY ./go.mod ./go.sum ./
 RUN go mod download
 
-COPY . .
+COPY . ./
 
 RUN go install "github.com/a-h/templ/cmd/templ@latest"
 RUN templ generate

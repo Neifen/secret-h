@@ -8,15 +8,19 @@ templ base(){
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="/static/img/favicon.jpg"  type="image/jpg">
         <title>Secret-H</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preload" href="/static/css/VT323-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+        <link href="/static/css/output.css" rel="stylesheet">
         <script src="/static/js/htmx.min.js"></script>
         <script src="/static/js/htmx-ext-ws.js"></script>
         <style>
-            /* Custom font to mimic terminal */
-            @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+            @font-face {
+                font-family: 'VT323';
+                src: url('/static/css/VT323-Regular.ttf') format('truetype'),
+            }
             body {
                 font-family: 'VT323', monospace;
             }
+            
         </style>
     </head>
     <body class="bg-gray-900 flex flex-col items-center min-h-screen p-4">

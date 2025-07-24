@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/Neifen/secret-h/game"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"log"
 )
 
@@ -19,7 +18,7 @@ func NewSession() *Session {
 
 func (s *Session) Start() {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Static("/static", "assets")
 
 	e.GET("/", s.homeHandler)

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"secret-h/view"
 )
@@ -29,6 +28,14 @@ func (s *Session) lobbyHandler(c echo.Context) error {
 	}
 
 	return view.RenderViewLobby(c, g, p)
+}
+
+// e.POST("/cancel-wait/:id/:originPid/:destPid", s.cancelWaitHandler)
+func (s *Session) cancelWaitHandler(c echo.Context) error {
+	gid := c.Param("id")
+	s.gamePool.CancelWait(gid)
+
+	return s.initVoteHandler(c)
 }
 
 // e.POST("/vote/:id/:originPid/:destPlayer", s.initVoteHandler)
@@ -106,8 +113,6 @@ func (s *Session) finishVoteHandler(c echo.Context) error {
 	}
 
 	if !result.Finished {
-		// todo this could be more fluid with ws
-		fmt.Printf("results: %+v", result)
 		return view.RenderVoteWaitPopup(c, result.Empty, gid, originPid, destPid)
 	}
 

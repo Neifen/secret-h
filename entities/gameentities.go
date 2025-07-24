@@ -20,9 +20,9 @@ func NewGame(code string) *Game {
 }
 
 type VoteResult struct {
-	Yes        []string // name, not uid
-	No         []string // name, not uid
-	Empty      []string //name, not uid
+	Yes        []string  // name, not uid
+	No         []string  // name, not uid
+	Empty      []*Player //player
 	Finished   bool
 	Success    bool
 	PlayerName string
@@ -49,6 +49,7 @@ type Vote struct {
 	DestPlayer   *Player
 	OriginPlayer *Player
 	Votes        map[string]string //playerid - vote (ja, nein, empty)
+	Waiting      bool              // origin player is on "wait" screen
 }
 
 func (g *Game) AddPlayer(name string) (*Player, error) {

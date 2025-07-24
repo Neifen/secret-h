@@ -51,6 +51,33 @@ func (gp *GamePool) MakeVote(gid string, dest *entities.Player, fromId, vote str
 	}
 
 	g.Vote.Votes[fromId] = vote
+
+	// notify
+	fmt.Println("voting, waiting?", g.Vote.Waiting)
+	if g.Vote.Waiting {
+		p, err := gp.FindPlayer(gid, fromId)
+		if err != nil {
+			return err
+		}
+
+		if vote == "" {
+			view.WSRenderAddPlayerWait(g.Vote.OriginPlayer.Ws, p)
+			view.WSRenderRemoveTryAgainWait(g.Vote.OriginPlayer.Ws, gid, g.Vote.OriginPlayer.Uid, g.Vote.DestPlayer.Uid)
+		} else {
+			view.WSRenderRemovePlayerWait(g.Vote.OriginPlayer.Ws, p)
+			count := 0
+			for _, vote := range g.Vote.Votes {
+				if vote == "" {
+					count++
+					break
+				}
+			}
+			if count == 0 {
+				view.WSRenderAddTryAgainWait(g.Vote.OriginPlayer.Ws, gid, g.Vote.OriginPlayer.Uid, g.Vote.DestPlayer.Uid)
+			}
+
+		}
+	}
 	return nil
 }
 
@@ -70,7 +97,7 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 
 	var yes []string
 	var no []string
-	var empty []string
+	var empty []*entities.Player
 
 	for pui, voteRes := range g.Vote.Votes {
 		switch voteRes {
@@ -79,31 +106,53 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 		case "no":
 			no = append(no, g.Players[pui].Name)
 		case "":
-			empty = append(empty, g.Players[pui].Name)
+			empty = append(empty, g.Players[pui])
 		}
 
 	}
 
 	// tie is a fail
-	fmt.Printf("length %v", len(empty))
 	success := len(yes) > len(no)
 	finished := len(empty) == 0
+	result := &entities.VoteResult{Empty: empty, Yes: yes, No: no, Finished: finished, Success: success, PlayerName: dest.Name}
 
 	if finished {
 		// finish vote
-		// todo notify players
 		g.Vote = nil
+
+		// inform websockets
+		// todo countdown?
+		// president gets this double, oh well
+		for _, wsPlayer := range g.Players {
+			if wsPlayer.Ws != nil {
+				view.WsRenderAfterVote(wsPlayer.Ws, result)
+			}
+		}
+	} else {
+		g.Vote.Waiting = true
 	}
 
-	return &entities.VoteResult{Empty: empty, Yes: yes, No: no, Finished: finished, Success: success, PlayerName: dest.Name}, nil
+	return result, nil
+}
+
+func (gp *GamePool) CancelWait(gid string) {
+	g, _ := gp.FindGame(gid)
+	if g != nil && g.Vote != nil {
+		g.Vote.Waiting = false
+	}
 }
 
 func (gp *GamePool) CancelVote(gid string) {
 
 	g, _ := gp.FindGame(gid)
 	if g != nil {
-		// todo notify players
 		g.Vote = nil
+		// inform websockets
+		for _, wsPlayer := range g.Players {
+			if wsPlayer.Ws != nil {
+				view.WsRenderCancelVote(wsPlayer.Ws)
+			}
+		}
 	}
 }
 

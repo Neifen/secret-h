@@ -11,9 +11,14 @@ import templruntime "github.com/a-h/templ/runtime"
 import "secret-h/entities"
 import "fmt"
 import "github.com/labstack/echo/v4"
+import "github.com/gorilla/websocket"
 
 func RenderAfterVotePopup(c echo.Context, result *entities.VoteResult) error {
 	return renderView(c, afterVotePopup(result))
+}
+
+func WsRenderAfterVote(ws *websocket.Conn, result *entities.VoteResult) error {
+	return renderWebsocket(ws, afterVotePopup(result))
 }
 
 func afterVotePopup(result *entities.VoteResult) templ.Component {
@@ -49,7 +54,7 @@ func afterVotePopup(result *entities.VoteResult) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 20, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 25, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -67,7 +72,7 @@ func afterVotePopup(result *entities.VoteResult) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(len(result.Yes))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 23, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 28, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -85,7 +90,7 @@ func afterVotePopup(result *entities.VoteResult) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 30, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 35, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -103,7 +108,7 @@ func afterVotePopup(result *entities.VoteResult) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(len(result.No))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 33, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 38, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -128,7 +133,7 @@ func afterVotePopup(result *entities.VoteResult) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 45, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/after_vote.popup.templ`, Line: 50, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

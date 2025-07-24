@@ -34,9 +34,10 @@ func (s *Session) Start() {
 	e.POST("/kill/:id/:player", s.initKillHandler)
 	e.POST("/kill-confirmed/:id/:player", s.killConfirmedHandler)
 	e.POST("/vote/:id/:originPid/:destPid", s.initVoteHandler)
+	e.POST("/make-vote/:id/:originPid/:destPid", s.makeVoteHandler)
 	e.POST("/cancel-vote/:id", s.cancelVoteHandler)
 	e.POST("/finish-vote/:id/:originPid/:destPid", s.finishVoteHandler)
-	e.POST("/make-vote/:id/:originPid/:destPid", s.makeVoteHandler)
+	e.POST("/cancel-wait/:id/:originPid/:destPid", s.cancelWaitHandler)
 	e.POST("/closePopup", s.closePopupHandler)
 
 	err := e.Start(":3000")

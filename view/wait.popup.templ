@@ -1,28 +1,93 @@
 package view
 
-import "github.com/labstack/echo/v4"
-import "fmt"
+import (
+	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
+	"secret-h/entities"
+)
 
-templ waitPopup(players []string, gid, originPid, destPid string) {
-    <!-- Popup TODO inner popup-->
-    <div id="popup" hx-swap-oob="true">
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm">
-                <p class="text-green-300 text-lg mb-4 text-center">> Waiting for the following players:</p>
-                <ul class="text-green-300 mb-6 space-y-2">
-                    for _, playerName := range players{
-                    <li>> {playerName}</li>
-                    }
-                </ul>
-                <div class="flex justify-center">
-                    {{ okUrl := fmt.Sprintf("/vote/%s/%s/%s", gid, originPid, destPid) }}
-                    <button hx-post={okUrl} class="bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> VERSTANDEN !</button>
-                </div>
-            </div>
-        </div>
-    </div>
+func RenderVoteWaitPopup(c echo.Context, players []*entities.Player, gid, originPid, destPid string) error {
+	return renderView(c, waitPopup(players, gid, originPid, destPid))
 }
 
-func RenderVoteWaitPopup(c echo.Context, players []string, gid, originPid, destPid string) error {
-    return renderView(c, waitPopup(players, gid, originPid, destPid))
+templ waitPopup(players []*entities.Player, gid, originPid, destPid string) {
+	<!-- Popup TODO inner popup-->
+	<div id="popup" hx-swap-oob="true">
+		<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm">
+				<p class="text-green-300 text-lg mb-4 text-center">> Waiting for the following players:</p>
+				<ul class="text-green-300 mb-6 space-y-2" id="player-waitlist">
+					for _, player := range players {
+						{{ id := fmt.Sprintf("waitlist-%s", player.Uid) }}
+						<li id={ id }>> { player.Name }</li>
+					}
+				</ul>
+				<div class="flex justify-center" id="wait-buttons">
+					{{ okUrl := fmt.Sprintf("/cancel-wait/%s/%s/%s", gid, originPid, destPid) }}
+					@wait_window_button(okUrl, "VERSTANDEN")
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ wait_window_button(url, text string) {
+	<button hx-post={ url } class="bg-green-500/20 text-green-300 px-4 py-2 mx-4 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> { text } !</button>
+}
+
+templ addPlayerWait(player *entities.Player) {
+	<ul class="text-green-300 mb-6 space-y-2" id="player-waitlist" hx-swap-oob="beforeend:#player-waitlist">
+		{{ id := fmt.Sprintf("waitlist-%s", player.Uid) }}
+		<li id={ id }>> { player.Name }</li>
+	</ul>
+}
+
+func WSRenderAddPlayerWait(ws *websocket.Conn, player *entities.Player) {
+	err := renderWebsocket(ws, addPlayerWait(player))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
+}
+
+func WSRenderRemovePlayerWait(ws *websocket.Conn, player *entities.Player) {
+	err := renderWebsocket(ws, removePlayerWait(player))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
+}
+
+templ removePlayerWait(player *entities.Player) {
+	{{ id := fmt.Sprintf("delete:#waitlist-%s", player.Uid) }}
+	<li hx-swap-oob={ id }></li>
+}
+
+func WSRenderAddTryAgainWait(ws *websocket.Conn, gid, originPid, destPid string) {
+	err := renderWebsocket(ws, addTryAgain(gid, originPid, destPid))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
+}
+
+templ addTryAgain(gid, originPid, destPid string) {
+	<div hx-swap-oob="#wait-buttons" id="wait-buttons">
+		{{ okUrl := fmt.Sprintf("/cancel-wait/%s/%s/%s", gid, originPid, destPid) }}
+		{{ tryAgainUrl := fmt.Sprintf("/finish-vote/%s/%s/%s", gid, originPid, destPid) }}
+		@wait_window_button(okUrl, "Back")
+		@wait_window_button(tryAgainUrl, "Try again")
+	</div>
+}
+
+func WSRenderRemoveTryAgainWait(ws *websocket.Conn, gid, originPid, destPid string) {
+	err := renderWebsocket(ws, removeTryAgain(gid, originPid, destPid))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
+}
+
+templ removeTryAgain(gid, originPid, destPid string) {
+	<div hx-swap-oob="#wait-buttons" id="wait-buttons">
+		{{ okUrl := fmt.Sprintf("/cancel-wait/%s/%s/%s", gid, originPid, destPid) }}
+		@wait_window_button(okUrl, "VERSTANDEN")
+	</div>
 }

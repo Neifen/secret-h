@@ -36,7 +36,7 @@ func vote(president bool, gid, toggled, originPid string, destP *entities.Player
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"popup\" hx-swap-oob=\"true\"><div class=\"fixed inset-0 bg-black/50 flex items-center justify-center z-50\"><div class=\"w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30\"><h1 class=\"text-2xl font-bold text-center text-green-400 mb-4 tracking-wider\">> Vote for ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"popup\" hx-swap-oob=\"true\" class=\"vote-popup\"><div class=\"fixed inset-0 bg-black/50 flex items-center justify-center z-50\"><div class=\"w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30\"><h1 class=\"text-2xl font-bold text-center text-green-400 mb-4 tracking-wider\">> Vote for ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -103,12 +103,48 @@ func vote(president bool, gid, toggled, originPid string, destP *entities.Player
 	})
 }
 
+func wsCancelVote() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div id=\"popup\" hx-swap-oob=\"vote-popup\" class=\"vote-popup\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
 func RenderVote(c echo.Context, president bool, gid, toggled, originPid string, destP *entities.Player) error {
 	return renderView(c, vote(president, gid, toggled, originPid, destP))
 }
 
 func WsRenderVote(ws *websocket.Conn, gid, originPid string, destP *entities.Player) {
 	err := renderWebsocket(ws, vote(false, gid, "", originPid, destP))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
+}
+
+func WsRenderCancelVote(ws *websocket.Conn) {
+	err := renderWebsocket(ws, wsCancelVote())
 	if err != nil {
 		fmt.Println("Websocket error: ", err.Error())
 	}

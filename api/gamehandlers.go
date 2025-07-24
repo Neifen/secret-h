@@ -17,8 +17,8 @@ func (s *Session) lobbyHandler(c echo.Context) error {
 	id := c.Param("id")
 	pid := c.Param("player")
 
-	g := s.gamePool.FindGame(id)
-	if g == nil {
+	g, err := s.gamePool.FindGame(id)
+	if err != nil {
 		return redirectHome(c)
 	}
 
@@ -46,13 +46,7 @@ func (s *Session) initVoteHandler(c echo.Context) error {
 		return view.RenderError(c, err)
 	}
 
-	g := s.gamePool.FindGame(gid)
-	if g == nil {
-		errMsg := fmt.Sprintf("game with id %v does not exist", gid)
-		return view.RenderMessage(c, errMsg)
-	}
-
-	v, err := g.NewVote(originPlayer, destPlayer)
+	v, err := s.gamePool.NewVote(gid, originPlayer, destPlayer)
 	if err != nil {
 		if v != nil {
 			// vote already exists
@@ -70,10 +64,7 @@ func (s *Session) initVoteHandler(c echo.Context) error {
 func (s *Session) cancelVoteHandler(c echo.Context) error {
 	gid := c.Param("id")
 
-	g := s.gamePool.FindGame(gid)
-	if g != nil {
-		g.CancelVote()
-	}
+	s.gamePool.CancelVote(gid)
 
 	return view.ClosePopup(c)
 }
@@ -86,17 +77,14 @@ func (s *Session) makeVoteHandler(c echo.Context) error {
 
 	toggle := c.QueryParam("toggle")
 
-	g := s.gamePool.FindGame(gid)
-	if g == nil {
-		errMsg := fmt.Sprintf("game with id %v does not exist", gid)
-		return view.RenderMessage(c, errMsg)
-	}
-
 	destPlayer, err := s.gamePool.FindPlayer(gid, destPid)
 	if err != nil {
 		return view.RenderError(c, err)
 	}
-	err = g.MakeVote(destPlayer, originPid, toggle)
+	err = s.gamePool.MakeVote(gid, destPlayer, originPid, toggle)
+	if err != nil {
+		return view.RenderError(c, err)
+	}
 
 	return view.RenderVoteButton(c, gid, toggle, originPid, destPlayer)
 }
@@ -107,18 +95,12 @@ func (s *Session) finishVoteHandler(c echo.Context) error {
 	originPid := c.Param("originPid")
 	destPid := c.Param("destPid")
 
-	g := s.gamePool.FindGame(gid)
-	if g == nil {
-		errMsg := fmt.Sprintf("game with id %v does not exist", gid)
-		return view.RenderMessage(c, errMsg)
-	}
-
 	player, err := s.gamePool.FindPlayer(gid, destPid)
 	if err != nil {
 		return view.RenderError(c, err)
 	}
 
-	result, err := g.FinishVote(player)
+	result, err := s.gamePool.FinishVote(gid, player)
 	if err != nil {
 		return view.RenderError(c, err)
 	}
@@ -154,7 +136,7 @@ func (s *Session) killConfirmedHandler(c echo.Context) error {
 	}
 
 	pName := p.Name
-	err = s.gamePool.RemoveFromGame(gid, pid)
+	err = s.gamePool.RemoveFromGame(gid, pid, true)
 	if err != nil {
 		return view.RenderError(c, err)
 	}

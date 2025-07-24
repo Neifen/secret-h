@@ -1,14 +1,14 @@
 package view
 
-import "secret-h/game"
+import "secret-h/entities"
 import "fmt"
 import "github.com/labstack/echo/v4"
 
-func RenderAfterVotePopup(c echo.Context, result *game.VoteResult) error {
+func RenderAfterVotePopup(c echo.Context, result *entities.VoteResult) error {
     return renderView(c, afterVotePopup(result))
 }
 
-templ afterVotePopup(result *game.VoteResult) {
+templ afterVotePopup(result *entities.VoteResult) {
     <!-- Popup -->
     <div id="popup" hx-swap-oob="true">
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

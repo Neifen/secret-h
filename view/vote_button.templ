@@ -1,12 +1,12 @@
 package view
 
 import (
-    "secret-h/game"
+    "secret-h/entities"
 	"github.com/labstack/echo/v4"
 	"fmt"
 )
 
-templ voteButton(gid, toggled, originPid string, destP *game.Player) {
+templ voteButton(gid, toggled, originPid string, destP *entities.Player) {
 
     {{ 
         toggle := "yes"
@@ -37,6 +37,6 @@ templ voteButton(gid, toggled, originPid string, destP *game.Player) {
     </div>
 }
 
-func RenderVoteButton(c echo.Context,gid, toggled, originPid string, destP *game.Player) error {
+func RenderVoteButton(c echo.Context,gid, toggled, originPid string, destP *entities.Player) error {
     return renderView(c, voteButton(gid, toggled, originPid, destP))
 }

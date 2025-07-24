@@ -1,0 +1,17 @@
+package view
+
+import "fmt"
+import "github.com/gorilla/websocket"
+
+templ removePlayer(pid string) {
+        {{ swap := fmt.Sprintf("delete:#%s", pid) }}
+        <li hx-swap-oob={swap}>
+        </li>
+}
+
+func WSRenderRemovePlayer(ws *websocket.Conn, pid string) {
+    err := renderWebsocket(ws, removePlayer(pid))
+    if err != nil {
+        fmt.Println("Websocket error: ", err.Error())
+    }
+}

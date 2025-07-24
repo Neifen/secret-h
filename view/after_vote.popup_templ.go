@@ -8,15 +8,15 @@ package view
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "secret-h/game"
+import "secret-h/entities"
 import "fmt"
 import "github.com/labstack/echo/v4"
 
-func RenderAfterVotePopup(c echo.Context, result *game.VoteResult) error {
+func RenderAfterVotePopup(c echo.Context, result *entities.VoteResult) error {
 	return renderView(c, afterVotePopup(result))
 }
 
-func afterVotePopup(result *game.VoteResult) templ.Component {
+func afterVotePopup(result *entities.VoteResult) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {

@@ -55,7 +55,7 @@ func (s *Session) leaveConfirmedHandler(c echo.Context) error {
 	gid := c.Param("id")
 	pid := c.Param("player")
 
-	err := s.gamePool.RemoveFromGame(gid, pid)
+	err := s.gamePool.RemoveFromGame(gid, pid, false)
 	if err != nil {
 		return view.RenderError(c, err)
 	}

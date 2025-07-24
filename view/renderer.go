@@ -1,9 +1,10 @@
 package view
 
 import (
-	"net/http"
-
+	"bytes"
+	"context"
 	"github.com/a-h/templ"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,12 +24,17 @@ func renderView(c echo.Context, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func ReplaceUrl(path string, c echo.Context, cmp templ.Component) error {
-	if c.Request().Header.Get("HX-Request") != "true" {
-		// standard redirect
-		return c.Redirect(http.StatusSeeOther, path)
-	}
+func renderWebsocket(ws *websocket.Conn, cmp templ.Component) error {
+	//c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
-	c.Response().Header().Set("HX-Replace-Url", path)
-	return renderView(c, cmp)
+	var buf bytes.Buffer
+	err := cmp.Render(context.Background(), &buf)
+	if err != nil {
+		return err
+	}
+	err = ws.WriteMessage(websocket.TextMessage, buf.Bytes())
+	if err != nil {
+		return err
+	}
+	return nil
 }

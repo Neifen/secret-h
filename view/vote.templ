@@ -1,12 +1,13 @@
 package view
 
 import (
-    "secret-h/game"
+    "secret-h/entities"
 	"github.com/labstack/echo/v4"
 	"fmt"
+	"github.com/gorilla/websocket"
 )
 
-templ vote(president bool, gid, toggled, originPid string, destP *game.Player) {
+templ vote(president bool, gid, toggled, originPid string, destP *entities.Player) {
     <div id="popup" hx-swap-oob="true">
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     
@@ -28,6 +29,13 @@ templ vote(president bool, gid, toggled, originPid string, destP *game.Player) {
     </div>
 }
 
-func RenderVote(c echo.Context, president bool, gid,toggled, originPid string, destP *game.Player) error {
+func RenderVote(c echo.Context, president bool, gid,toggled, originPid string, destP *entities.Player) error {
     return renderView(c, vote(president,gid,toggled, originPid, destP))
+}
+
+func WsRenderVote(ws *websocket.Conn, gid, originPid string, destP *entities.Player) {
+    err := renderWebsocket(ws, vote(false,gid,"", originPid, destP))
+    if err != nil {
+        fmt.Println("Websocket error: ", err.Error())
+    }
 }

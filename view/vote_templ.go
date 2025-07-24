@@ -10,11 +10,12 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	"secret-h/game"
+	"secret-h/entities"
 )
 
-func vote(president bool, gid, toggled, originPid string, destP *game.Player) templ.Component {
+func vote(president bool, gid, toggled, originPid string, destP *entities.Player) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -42,7 +43,7 @@ func vote(president bool, gid, toggled, originPid string, destP *game.Player) te
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(destP.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 14, Col: 108}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 15, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -70,7 +71,7 @@ func vote(president bool, gid, toggled, originPid string, destP *game.Player) te
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(finishUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 22, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 23, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -83,7 +84,7 @@ func vote(president bool, gid, toggled, originPid string, destP *game.Player) te
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(cancelUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 23, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/vote.templ`, Line: 24, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -102,8 +103,15 @@ func vote(president bool, gid, toggled, originPid string, destP *game.Player) te
 	})
 }
 
-func RenderVote(c echo.Context, president bool, gid, toggled, originPid string, destP *game.Player) error {
+func RenderVote(c echo.Context, president bool, gid, toggled, originPid string, destP *entities.Player) error {
 	return renderView(c, vote(president, gid, toggled, originPid, destP))
+}
+
+func WsRenderVote(ws *websocket.Conn, gid, originPid string, destP *entities.Player) {
+	err := renderWebsocket(ws, vote(false, gid, "", originPid, destP))
+	if err != nil {
+		fmt.Println("Websocket error: ", err.Error())
+	}
 }
 
 var _ = templruntime.GeneratedTemplate

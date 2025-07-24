@@ -8,10 +8,10 @@ package view
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/gorilla/websocket"
 import "fmt"
+import "github.com/gorilla/websocket"
 
-func removedPopup() templ.Component {
+func removePlayer(pid string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -32,7 +32,21 @@ func removedPopup() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"popup\" hx-swap-oob=\"true\"><div class=\"fixed inset-0 bg-black/50 flex items-center justify-center z-50\"><div class=\"bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm font-[&#39;VT323&#39;,monospace]\"><p class=\"text-green-300 text-lg mb-6 text-center\">> You have been killed, please now be silent</p><div class=\"flex justify-center\"><button hx-get=\"/\" class=\"bg-green-500/20 text-green-300 px-4 py-2 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors\">> SCHEISSE !</button></div></div></div></div>")
+		swap := fmt.Sprintf("delete:#%s", pid)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li hx-swap-oob=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(swap)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby_remove_player.templ`, Line: 8, Col: 29}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -40,10 +54,10 @@ func removedPopup() templ.Component {
 	})
 }
 
-func WSRenderRemovedPopup(ws *websocket.Conn) {
-	err := renderWebsocket(ws, removedPopup())
+func WSRenderRemovePlayer(ws *websocket.Conn, pid string) {
+	err := renderWebsocket(ws, removePlayer(pid))
 	if err != nil {
-		fmt.Println("error: ", err.Error())
+		fmt.Println("Websocket error: ", err.Error())
 	}
 }
 

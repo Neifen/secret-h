@@ -28,6 +28,8 @@ func (s *Session) Start() {
 	e.POST("/leave/:id/:player", s.leaveHandler)
 	e.POST("/leave-confirmed/:id/:player", s.leaveConfirmedHandler)
 
+	e.GET("/ws/:id/:player", s.wsHandler)
+
 	e.GET("/lobby/:id/:player", s.lobbyHandler)
 	e.POST("/kill/:id/:player", s.initKillHandler)
 	e.POST("/kill-confirmed/:id/:player", s.killConfirmedHandler)

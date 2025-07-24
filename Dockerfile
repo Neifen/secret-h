@@ -11,8 +11,8 @@ RUN GOOS=linux GOARCH=arm64 go build -o bin/secret-h .
 
 FROM scratch
 
-COPY --from=builder bin/secret-h bin/secret-h
-COPY --from=builder assets bin/assets
+COPY --from=builder bin/secret-h secret-h
+COPY --from=builder assets assets
 
 EXPOSE 8148
-ENTRYPOINT ["bin/secret-h"]
+ENTRYPOINT ["secret-h"]

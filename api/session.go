@@ -20,7 +20,7 @@ func NewSession() *Session {
 func (s *Session) Start() {
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.Static("static", "assets")
+	e.Static("/static", "assets")
 
 	e.GET("/", s.homeHandler)
 	e.POST("/start", s.startHandler)

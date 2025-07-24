@@ -2,9 +2,9 @@ package api
 
 import (
 	"fmt"
+	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"secret-h/view"
 )
 
 // e.POST("/start", s.startHandler)

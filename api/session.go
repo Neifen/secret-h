@@ -1,10 +1,10 @@
 package api
 
 import (
+	"github.com/Neifen/secret-h/game"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"log"
-	"secret-h/game"
 )
 
 type Session struct {

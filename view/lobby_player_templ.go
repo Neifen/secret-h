@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "fmt"
-import "secret-h/entities"
+import "github.com/Neifen/secret-h/entities"
 import "github.com/gorilla/websocket"
 
 func viewPlayer(gid, pid string, player *entities.Player) templ.Component {

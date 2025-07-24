@@ -2,10 +2,10 @@ package game
 
 import (
 	"fmt"
+	"github.com/Neifen/secret-h/entities"
+	"github.com/Neifen/secret-h/view"
 	"github.com/gorilla/websocket"
 	"math/rand"
-	"secret-h/entities"
-	"secret-h/view"
 	"strconv"
 )
 

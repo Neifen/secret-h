@@ -10,9 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/Neifen/secret-h/entities"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	"secret-h/entities"
 )
 
 func RenderVoteWaitPopup(c echo.Context, players []*entities.Player, gid, originPid, destPid string) error {
@@ -135,7 +135,7 @@ func wait_window_button(url, text string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/wait.popup.templ`, Line: 36, Col: 164}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/wait.popup.templ`, Line: 36, Col: 165}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

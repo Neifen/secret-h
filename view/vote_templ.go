@@ -10,9 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/Neifen/secret-h/entities"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	"secret-h/entities"
 )
 
 func vote(president bool, gid, toggled, originPid string, destP *entities.Player) templ.Component {

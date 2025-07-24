@@ -1,12 +1,15 @@
-module secret-h
+module github.com/Neifen/secret-h
 
 go 1.24
 
 require (
-	github.com/a-h/templ v0.3.920 // indirect
-	github.com/google/uuid v1.6.0 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/labstack/echo/v4 v4.13.4 // indirect
+	github.com/a-h/templ v0.3.920
+	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.3
+	github.com/labstack/echo/v4 v4.13.4
+)
+
+require (
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

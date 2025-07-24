@@ -1,9 +1,9 @@
 package api
 
 import (
+	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"secret-h/view"
 )
 
 // e.GET("/", s.homeHandler)

@@ -1,8 +1,8 @@
 package api
 
 import (
+	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
-	"secret-h/view"
 )
 
 // e.POST("/closePopup", s.closePopupHandler)

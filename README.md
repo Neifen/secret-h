@@ -19,12 +19,12 @@ The application is available as a Docker image on Docker Hub.
 
 1. Pull the latest image:
    ```bash
-   docker pull docker.io/neifen/secret-h:latest
+   docker pull docker.io/swissneifen/secret-h:latest
    ```
 
 2. Run the container, mapping port `8148`:
    ```bash
-   docker run -d -p 8148:8148 docker.io/neifen/secret-h:latest
+   docker run -d -p 8148:8148 docker.io/swissneifen/secret-h:latest
    ```
 
 3. Access the app in your browser at:
@@ -39,7 +39,7 @@ For a more persistent setup, use the provided Docker Compose configuration.
    ```yaml
    services:
      secret-h:
-       image: docker.io/neifen/secret-h:latest
+       image: docker.io/swissneifen/secret-h:latest
        ports:
          - "8148:8148"
        restart: unless-stopped

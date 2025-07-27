@@ -1,0 +1,25 @@
+package view
+
+import "github.com/labstack/echo/v4"
+import "fmt"
+import 	"encoding/base64"
+
+templ qrPopup(qr []byte) {
+	<div id="popup" hx-swap-oob="true">
+		<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div class="bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30 w-full max-w-sm font-['VT323',monospace]">
+				<div hx-post="/closePopup" class="flex justify-center">
+				{{ 
+				    imgBase := base64.StdEncoding.EncodeToString(qr) 
+				    imgUrl := fmt.Sprintf(`data:image/png;base64, %s`, imgBase)
+				}}
+				    <img src={imgUrl} alt="QR"/>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+func RenderQRPopup(c echo.Context, qr []byte) error {
+	return renderView(c, qrPopup(qr))
+}

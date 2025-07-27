@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Neifen/secret-h/game"
 	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
 )
@@ -129,6 +130,17 @@ func (s *Session) initKillHandler(c echo.Context) error {
 	}
 
 	return view.RenderKillPopup(c, gid, p)
+}
+
+// e.GET("/lobby-qr/:id/", s.lobbyHandler)
+func (s *Session) initLobbyQrPopup(c echo.Context) error {
+	gid := c.Param("id")
+	qr, err := game.CreateQr(gid, c.Request())
+	if err != nil {
+		return view.RenderError(c, err)
+	}
+
+	return view.RenderQRPopup(c, qr)
 }
 
 // e.POST("/kill-confirmed/:id/:player", s.killConfirmedHandler)

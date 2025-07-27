@@ -30,6 +30,7 @@ func (s *Session) Start() {
 	e.GET("/ws/:id/:player", s.wsHandler)
 
 	e.GET("/lobby/:id/:player", s.lobbyHandler)
+	e.POST("/lobby-qr/:id", s.initLobbyQrPopup)
 	e.POST("/kill/:id/:player", s.initKillHandler)
 	e.POST("/kill-confirmed/:id/:player", s.killConfirmedHandler)
 	e.POST("/vote/:id/:originPid/:destPid", s.initVoteHandler)

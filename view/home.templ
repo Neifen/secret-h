@@ -15,8 +15,8 @@ templ home() {
 				<input type="text" name="code" id="code" placeholder="Enter game code" class="w-full p-3 bg-gray-900 border border-green-500/50 rounded-md text-green-300 focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-green-700/50"/>
 			</div>
 			<div class="mb-6">
-				<button hidden id="join-button" hx-post="/join" hx-swap="none" class="w-full bg-green-500/20 text-green-300 p-3 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> Join Game</button>
 				<button id="start-button" hx-post="/start" hx-swap="none" class="w-full bg-green-500/20 text-green-300 p-3 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> Start New Game</button>
+				<button hidden disabled id="join-button" hx-post="/join" hx-swap="none" class="w-full bg-green-500/20 text-green-300 p-3 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">> Join Game</button>
 			</div>
 			<script>
                         const code = document.getElementById('code');
@@ -25,10 +25,14 @@ templ home() {
                         
                         // needs to happen on loan
                         if(code.value.length > 0) {
+                            startButton.setAttribute("disabled", "true")
+                            joinButton.removeAttribute("disabled")
                             startButton.setAttribute("hidden", "true")
                             joinButton.removeAttribute("hidden")
 
                         } else {
+                            joinButton.setAttribute("disabled", "true")
+                            startButton.removeAttribute("disabled")
                             joinButton.setAttribute("hidden", "true")
                             startButton.removeAttribute("hidden")
                         }

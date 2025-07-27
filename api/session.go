@@ -24,6 +24,8 @@ func (s *Session) Start() {
 	e.GET("/", s.homeHandler)
 	e.POST("/start", s.startHandler)
 	e.POST("/join", s.joinHandler)
+	e.GET("/join-qr/:id", s.joinQrHandler)
+
 	e.POST("/leave/:id/:player", s.leaveHandler)
 	e.POST("/leave-confirmed/:id/:player", s.leaveConfirmedHandler)
 

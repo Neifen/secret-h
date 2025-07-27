@@ -24,6 +24,13 @@ func (s *Session) startHandler(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// e.GET("/join-qr/:id", s.joinQrHandler)
+func (s *Session) joinQrHandler(c echo.Context) error {
+	gid := c.Param("id")
+
+	return view.RenderViewJoinQr(c, gid)
+}
+
 // e.POST("/join", s.joinHandler)
 func (s *Session) joinHandler(c echo.Context) error {
 	playerName := c.FormValue("name")

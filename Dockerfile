@@ -6,8 +6,9 @@ RUN go mod download
 
 COPY . ./
 
-RUN go install "github.com/a-h/templ/cmd/templ@latest"
-RUN templ generate
+# Activate if needed, but also takes way too long
+#RUN go install "github.com/a-h/templ/cmd/templ@latest"
+#RUN templ generate
 RUN CGO_ENABLED=0  GOOS=linux go build -o bin/secret-h .
 
 FROM scratch

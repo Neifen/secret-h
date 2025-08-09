@@ -157,6 +157,7 @@ func (gp *GamePool) CancelVote(gid string) {
 }
 
 type GamePool struct {
+	//Games sync.Map
 	Games map[string]*entities.Game
 }
 
@@ -290,5 +291,8 @@ func (gp *GamePool) RemoveFromGame(code string, playerId string, kill bool) erro
 	}
 
 	delete(g.Players, playerId)
+	if len(g.Players) == 0 {
+		delete(gp.Games, code)
+	}
 	return nil
 }

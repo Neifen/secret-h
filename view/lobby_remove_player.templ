@@ -4,7 +4,7 @@ import "fmt"
 import "github.com/gorilla/websocket"
 
 templ removePlayer(pid string) {
-        {{ swap := fmt.Sprintf("delete:#%s", pid) }}
+        {{ swap := fmt.Sprintf("delete:#id%s", pid) }}
         <li hx-swap-oob={swap}>
         </li>
 }

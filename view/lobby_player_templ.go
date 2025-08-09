@@ -37,15 +37,15 @@ func viewPlayer(gid, pid string, player *entities.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		id := fmt.Sprintf("id%s", player.Uid)
+		liId := fmt.Sprintf("id%s", player.Uid)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(id)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(liId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby_player.templ`, Line: 10, Col: 114}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby_player.templ`, Line: 10, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

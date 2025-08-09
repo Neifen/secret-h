@@ -6,8 +6,8 @@ import "github.com/gorilla/websocket"
 
 templ viewPlayer(gid, pid string, player *entities.Player) {
     <ul class="space-y-3 test" id="player-list" hx-swap-oob="beforeend:#player-list">
-        {{id := fmt.Sprintf("id%s",player.Uid)}}
-        <li class="flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50" id={id} >
+        {{liId := fmt.Sprintf("id%s",player.Uid)}}
+        <li class="flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50" id={liId} >
             <span class="text-green-300">{ player.Name }</span>
             <div class="flex gap-2">
                 {{ voteUrl := fmt.Sprintf("/vote/%s/%s/%s", gid, pid, player.Uid) }}

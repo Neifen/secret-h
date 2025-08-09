@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-templ lobby(game *entities.Game, thisPlayer *entities.Player) {
+templ lobby(game *entities.Game, players map[string]*entities.Player, thisPlayer *entities.Player) {
 	<div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6 border border-green-500/30">
 		<h1 class="text-2xl font-bold text-center text-green-400 mb-2 tracking-wider">Secret-H </h1>
 		<div class="flex justify-center gap-4">
@@ -37,7 +37,7 @@ templ lobby(game *entities.Game, thisPlayer *entities.Player) {
 						<button hx-post={ ownVoteUrl } hx-swap="none" class="bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors">Vote</button>
 					</div>
 				</li>
-				for uid, p := range game.Players {
+				for uid, p := range players {
 					if uid == thisPlayer.Uid {
 						{{ continue }}
 					}
@@ -62,12 +62,12 @@ templ lobby(game *entities.Game, thisPlayer *entities.Player) {
 	</div>
 }
 
-func RenderViewLobby(c echo.Context, game *entities.Game, player *entities.Player) error {
-	return renderView(c, viewLobby(game, player))
+func RenderViewLobby(c echo.Context, game *entities.Game,players map[string]*entities.Player, player *entities.Player) error {
+	return renderView(c, viewLobby(game,players, player))
 }
 
-templ viewLobby(game *entities.Game, player *entities.Player) {
+templ viewLobby(game *entities.Game,players map[string]*entities.Player, player *entities.Player) {
 	@base() {
-		@lobby(game, player)
+		@lobby(game,players, player)
 	}
 }

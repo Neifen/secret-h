@@ -21,18 +21,21 @@ func (gp *GamePool) NewVote(gid string, origin *entities.Player, dest *entities.
 	}
 
 	votes := &sync.Map{}
-	for key := range g.Players {
+	g.Players.Range(func(key, _ interface{}) bool {
 		votes.Store(key, "")
-	}
+		return true
+	})
 
 	g.Vote = &entities.Vote{OriginPlayer: origin, DestPlayer: dest, Votes: votes}
 
 	// inform websockets
-	for _, p := range g.Players {
+	g.Players.Range(func(_, v interface{}) bool {
+		p := v.(*entities.Player)
 		if p.Ws != nil && p.Uid != origin.Uid {
 			view.WsRenderVote(p.Ws, gid, p.Uid, dest)
 		}
-	}
+		return true
+	})
 
 	return g.Vote, nil
 }
@@ -103,13 +106,15 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 
 	g.Vote.Votes.Range(func(k, voteRes interface{}) bool {
 		pui := k.(string)
+		player, _ := g.Players.Load(pui)
+		p := player.(*entities.Player)
 		switch voteRes {
 		case "yes":
-			yes = append(yes, g.Players[pui].Name)
+			yes = append(yes, p.Name)
 		case "no":
-			no = append(no, g.Players[pui].Name)
+			no = append(no, p.Name)
 		case "":
-			empty = append(empty, g.Players[pui])
+			empty = append(empty, p)
 		}
 		return true
 	})
@@ -126,11 +131,13 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 		// inform websockets
 		// todo countdown?
 		// president gets this double, oh well
-		for _, wsPlayer := range g.Players {
+		g.Players.Range(func(_, v interface{}) bool {
+			wsPlayer := v.(*entities.Player)
 			if wsPlayer.Ws != nil {
 				view.WsRenderAfterVote(wsPlayer.Ws, result)
 			}
-		}
+			return true
+		})
 	} else {
 		g.Vote.Waiting = true
 	}
@@ -151,16 +158,18 @@ func (gp *GamePool) CancelVote(gid string) {
 	if g != nil {
 		g.Vote = nil
 		// inform websockets
-		for _, wsPlayer := range g.Players {
+		g.Players.Range(func(_, v interface{}) bool {
+			wsPlayer := v.(*entities.Player)
 			if wsPlayer.Ws != nil {
 				view.WsRenderCancelVote(wsPlayer.Ws)
 			}
-		}
+			return true
+		})
 	}
 }
 
 type GamePool struct {
-	Games *sync.Map
+	Games *sync.Map // string - *entities.Game
 }
 
 func NewGamePool() *GamePool {
@@ -182,12 +191,12 @@ func (gp *GamePool) SetPlayerWS(conn *websocket.Conn, gid, pid string) error {
 	if err != nil {
 		return err
 	}
-	p := g.Players[pid]
-	if p == nil {
+	p, ok := g.Players.Load(pid)
+	if !ok {
 		return fmt.Errorf("player with id %v does not exist in game %v", pid, gid)
 	}
 
-	p.Ws = conn
+	p.(*entities.Player).Ws = conn
 	return nil
 }
 
@@ -197,12 +206,12 @@ func (gp *GamePool) FindPlayer(code, playerId string) (*entities.Player, error) 
 		return nil, err
 	}
 
-	p := g.Players[playerId]
-	if p == nil {
+	p, ok := g.Players.Load(playerId)
+	if !ok {
 		return nil, fmt.Errorf("player with id %v does not exist in game %v", playerId, code)
 	}
 
-	return p, nil
+	return p.(*entities.Player), nil
 }
 
 func (gp *GamePool) VoteForPlayer(code, playerId string) (*entities.Player, error) {
@@ -211,12 +220,12 @@ func (gp *GamePool) VoteForPlayer(code, playerId string) (*entities.Player, erro
 		return nil, err
 	}
 
-	p := g.Players[playerId]
-	if p == nil {
+	p, ok := g.Players.Load(playerId)
+	if !ok {
 		return nil, fmt.Errorf("player with id %v does not exist in game %v", playerId, code)
 	}
 
-	return p, nil
+	return p.(*entities.Player), nil
 }
 
 func (gp *GamePool) StartGame(playerName string) (string, *entities.Player, error) {
@@ -257,11 +266,13 @@ func (gp *GamePool) JoinGame(gid string, playerName string) (*entities.Player, e
 	}
 
 	// inform websockets
-	for _, wsPlayer := range g.Players {
+	g.Players.Range(func(_, v interface{}) bool {
+		wsPlayer := v.(*entities.Player)
 		if wsPlayer.Ws != nil && wsPlayer.Uid != p.Uid {
 			view.WSRenderNewPlayer(wsPlayer.Ws, gid, wsPlayer.Uid, p)
 		}
-	}
+		return true
+	})
 
 	fmt.Printf("%v successfully joined game %v\n", playerName, gid)
 	return p, nil
@@ -273,10 +284,11 @@ func (gp *GamePool) RemoveFromGame(code string, playerId string, kill bool) erro
 		return err
 	}
 
-	p := g.Players[playerId]
-	if p == nil {
+	pl, ok := g.Players.Load(playerId)
+	if !ok {
 		return fmt.Errorf("DestPlayer with id %v does not exist in game %v", playerId, code)
 	}
+	p := pl.(*entities.Player)
 
 	fmt.Printf("remove %v from game %v\n", p.Name, code)
 	if p.Ws != nil && kill {
@@ -285,14 +297,18 @@ func (gp *GamePool) RemoveFromGame(code string, playerId string, kill bool) erro
 	}
 
 	// notify all other players
-	for _, wsPlayer := range g.Players {
+	playerLen := 0
+	g.Players.Range(func(_, v interface{}) bool {
+		wsPlayer := v.(*entities.Player)
 		if wsPlayer.Ws != nil && wsPlayer.Uid != p.Uid {
 			view.WSRenderRemovePlayer(wsPlayer.Ws, p.Uid)
 		}
-	}
+		playerLen++
+		return true
+	})
 
-	delete(g.Players, playerId)
-	if len(g.Players) == 0 {
+	g.Players.Delete(playerId)
+	if playerLen == 1 {
 		gp.Games.Delete(code)
 	}
 	return nil

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Neifen/secret-h/entities"
 	"github.com/Neifen/secret-h/game"
 	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
@@ -28,7 +29,13 @@ func (s *Session) lobbyHandler(c echo.Context) error {
 		return redirectHome(c)
 	}
 
-	return view.RenderViewLobby(c, g, p)
+	players := make(map[string]*entities.Player)
+
+	g.Players.Range(func(k, v interface{}) bool {
+		players[k.(string)] = v.(*entities.Player)
+		return true
+	})
+	return view.RenderViewLobby(c, g, players, p)
 }
 
 // e.POST("/cancel-wait/:id/:originPid/:destPid", s.cancelWaitHandler)

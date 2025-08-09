@@ -14,7 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func lobby(game *entities.Game, thisPlayer *entities.Player) templ.Component {
+func lobby(game *entities.Game, players map[string]*entities.Player, thisPlayer *entities.Player) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -114,7 +114,7 @@ func lobby(game *entities.Game, thisPlayer *entities.Player) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for uid, p := range game.Players {
+		for uid, p := range players {
 			if uid == thisPlayer.Uid {
 				continue
 			}
@@ -225,11 +225,11 @@ func lobby(game *entities.Game, thisPlayer *entities.Player) templ.Component {
 	})
 }
 
-func RenderViewLobby(c echo.Context, game *entities.Game, player *entities.Player) error {
-	return renderView(c, viewLobby(game, player))
+func RenderViewLobby(c echo.Context, game *entities.Game, players map[string]*entities.Player, player *entities.Player) error {
+	return renderView(c, viewLobby(game, players, player))
 }
 
-func viewLobby(game *entities.Game, player *entities.Player) templ.Component {
+func viewLobby(game *entities.Game, players map[string]*entities.Player, player *entities.Player) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -262,7 +262,7 @@ func viewLobby(game *entities.Game, player *entities.Player) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = lobby(game, player).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = lobby(game, players, player).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

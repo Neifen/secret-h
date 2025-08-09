@@ -9,12 +9,12 @@ import (
 
 type Game struct {
 	Code    string
-	Players map[string]*Player
+	Players *sync.Map // string - *Player
 	Vote    *Vote
 }
 
 func NewGame(code string) *Game {
-	players := make(map[string]*Player)
+	players := &sync.Map{}
 
 	fmt.Printf("New game created with code %v\n", code)
 	return &Game{Code: code, Players: players}
@@ -59,7 +59,7 @@ func (g *Game) AddPlayer(name string) (*Player, error) {
 		return nil, err
 	}
 
-	g.Players[p.Uid] = p
+	g.Players.Store(p.Uid, p)
 	fmt.Printf("%v added to game %v\n", p.Name, g.Code)
 	return p, nil
 }

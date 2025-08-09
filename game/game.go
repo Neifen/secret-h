@@ -8,7 +8,38 @@ import (
 	"math/rand"
 	"strconv"
 	"sync"
+	"time"
 )
+
+type GamePool struct {
+	Games *sync.Map // string - *entities.Game
+}
+
+func NewGamePool() *GamePool {
+	gp := &GamePool{&sync.Map{}}
+
+	go gp.watchdog()
+
+	return gp
+}
+
+func (gp *GamePool) watchdog() {
+	for {
+		i := 0
+		gp.Games.Range(func(key, value interface{}) bool {
+			g := value.(*entities.Game)
+			if g.CreatedAt.Add(time.Hour * 24).Before(time.Now()) {
+				fmt.Printf("Games stale: %v\n", key)
+				gp.Games.Delete(key)
+				i--
+			}
+			i++
+			return true
+		})
+		fmt.Printf("Games running: %v\n", i)
+		time.Sleep(time.Hour)
+	}
+}
 
 func (gp *GamePool) NewVote(gid string, origin *entities.Player, dest *entities.Player) (*entities.Vote, error) {
 	g, err := gp.FindGame(gid)
@@ -166,14 +197,6 @@ func (gp *GamePool) CancelVote(gid string) {
 			return true
 		})
 	}
-}
-
-type GamePool struct {
-	Games *sync.Map // string - *entities.Game
-}
-
-func NewGamePool() *GamePool {
-	return &GamePool{&sync.Map{}}
 }
 
 func (gp *GamePool) FindGame(gid string) (*entities.Game, error) {

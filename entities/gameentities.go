@@ -5,19 +5,21 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"sync"
+	"time"
 )
 
 type Game struct {
-	Code    string
-	Players *sync.Map // string - *Player
-	Vote    *Vote
+	Code      string
+	Players   *sync.Map // string - *Player
+	Vote      *Vote
+	CreatedAt time.Time
 }
 
 func NewGame(code string) *Game {
 	players := &sync.Map{}
 
 	fmt.Printf("New game created with code %v\n", code)
-	return &Game{Code: code, Players: players}
+	return &Game{Code: code, Players: players, CreatedAt: time.Now()}
 }
 
 type VoteResult struct {

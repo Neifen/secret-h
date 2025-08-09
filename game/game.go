@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"math/rand"
 	"strconv"
+	"sync"
 )
 
 func (gp *GamePool) NewVote(gid string, origin *entities.Player, dest *entities.Player) (*entities.Vote, error) {
@@ -157,30 +158,28 @@ func (gp *GamePool) CancelVote(gid string) {
 }
 
 type GamePool struct {
-	//Games sync.Map
-	Games map[string]*entities.Game
+	Games sync.Map
 }
 
 func NewGamePool() *GamePool {
-	return &GamePool{Games: make(map[string]*entities.Game)}
+	return &GamePool{}
 }
 
 func (gp *GamePool) FindGame(gid string) (*entities.Game, error) {
-	g := gp.Games[gid]
+	g, _ := gp.Games.Load(gid)
 	if g == nil {
 		errMsg := fmt.Errorf("game with id %v does not exist", gid)
 		return nil, errMsg
 	}
 
-	return g, nil
+	return g.(*entities.Game), nil
 }
 
 func (gp *GamePool) SetPlayerWS(conn *websocket.Conn, gid, pid string) error {
-	g := gp.Games[gid]
-	if g == nil {
-		return fmt.Errorf("game with code %v does not exist", gid)
+	g, err := gp.FindGame(gid)
+	if err != nil {
+		return err
 	}
-
 	p := g.Players[pid]
 	if p == nil {
 		return fmt.Errorf("player with id %v does not exist in game %v", pid, gid)
@@ -191,9 +190,9 @@ func (gp *GamePool) SetPlayerWS(conn *websocket.Conn, gid, pid string) error {
 }
 
 func (gp *GamePool) FindPlayer(code, playerId string) (*entities.Player, error) {
-	g := gp.Games[code]
-	if g == nil {
-		return nil, fmt.Errorf("game with code %v does not exist", code)
+	g, err := gp.FindGame(code)
+	if err != nil {
+		return nil, err
 	}
 
 	p := g.Players[playerId]
@@ -205,9 +204,9 @@ func (gp *GamePool) FindPlayer(code, playerId string) (*entities.Player, error) 
 }
 
 func (gp *GamePool) VoteForPlayer(code, playerId string) (*entities.Player, error) {
-	g := gp.Games[code]
-	if g == nil {
-		return nil, fmt.Errorf("game with code %v does not exist", code)
+	g, err := gp.FindGame(code)
+	if err != nil {
+		return nil, err
 	}
 
 	p := g.Players[playerId]
@@ -226,14 +225,14 @@ func (gp *GamePool) StartGame(playerName string) (string, *entities.Player, erro
 		iCode = minCode + rand.Intn(99999-minCode)
 		code := strconv.Itoa(iCode)
 
-		_, contains := gp.Games[code]
+		_, contains := gp.Games.Load(code)
 		if !contains {
 			g := entities.NewGame(code)
 			p, err := g.AddPlayer(playerName)
 			if err != nil {
 				return "", nil, err
 			}
-			gp.Games[code] = g
+			gp.Games.Store(code, g)
 			fmt.Printf("Starting game %v with DestPlayer %v\n", code, playerName)
 			return code, p, nil
 		}
@@ -244,8 +243,8 @@ func (gp *GamePool) StartGame(playerName string) (string, *entities.Player, erro
 func (gp *GamePool) JoinGame(gid string, playerName string) (*entities.Player, error) {
 	fmt.Printf("%v trying to join game %v\n", playerName, gid)
 
-	g, contains := gp.Games[gid]
-	if !contains {
+	g, _ := gp.FindGame(gid)
+	if g == nil {
 		fmt.Printf("%v failed to join game %v, code didn't exist\n", playerName, gid)
 		return nil, fmt.Errorf("could not find a game with code %v", gid)
 	}
@@ -267,9 +266,9 @@ func (gp *GamePool) JoinGame(gid string, playerName string) (*entities.Player, e
 }
 
 func (gp *GamePool) RemoveFromGame(code string, playerId string, kill bool) error {
-	g := gp.Games[code]
-	if g == nil {
-		return fmt.Errorf("game with code %v does not exist", code)
+	g, err := gp.FindGame(code)
+	if err != nil {
+		return err
 	}
 
 	p := g.Players[playerId]
@@ -292,7 +291,7 @@ func (gp *GamePool) RemoveFromGame(code string, playerId string, kill bool) erro
 
 	delete(g.Players, playerId)
 	if len(g.Players) == 0 {
-		delete(gp.Games, code)
+		gp.Games.Delete(code)
 	}
 	return nil
 }

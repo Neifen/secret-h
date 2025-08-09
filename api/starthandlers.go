@@ -5,6 +5,7 @@ import (
 	"github.com/Neifen/secret-h/view"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"time"
 )
 
 // e.POST("/start", s.startHandler)
@@ -20,6 +21,8 @@ func (s *Session) startHandler(c echo.Context) error {
 	}
 
 	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
+
+	setCookies(c, code, p.Uid)
 	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
 	return c.NoContent(http.StatusOK)
 }
@@ -45,6 +48,8 @@ func (s *Session) joinHandler(c echo.Context) error {
 	}
 
 	url := fmt.Sprintf("/lobby/%v/%s", code, p.Uid)
+
+	setCookies(c, code, p.Uid)
 	c.Response().Header().Set("HX-Redirect", url) //HX-Redirect to url
 	return c.NoContent(http.StatusOK)
 }
@@ -67,6 +72,17 @@ func (s *Session) leaveConfirmedHandler(c echo.Context) error {
 		return view.RenderError(c, err)
 	}
 
+	setCookies(c, gid, pid)
 	c.Response().Header().Set("HX-Redirect", "/") //HX-Redirect to home
 	return c.NoContent(http.StatusOK)
+}
+
+func setCookies(c echo.Context, gid, pid string) {
+	c.SetCookie(&http.Cookie{Name: "gid", Value: gid, Path: "/"})
+	c.SetCookie(&http.Cookie{Name: "pid", Value: pid, Path: "/"})
+}
+
+func deleteCookies(c echo.Context) {
+	c.SetCookie(&http.Cookie{Name: "gid", Value: "", Path: "/", Expires: time.Unix(0, 0)})
+	c.SetCookie(&http.Cookie{Name: "pid", Value: "", Path: "/", Expires: time.Unix(0, 0)})
 }

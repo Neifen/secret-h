@@ -20,9 +20,9 @@ func (gp *GamePool) NewVote(gid string, origin *entities.Player, dest *entities.
 		return g.Vote, fmt.Errorf("vote already exists")
 	}
 
-	votes := make(map[string]string)
+	votes := &sync.Map{}
 	for key := range g.Players {
-		votes[key] = ""
+		votes.Store(key, "")
 	}
 
 	g.Vote = &entities.Vote{OriginPlayer: origin, DestPlayer: dest, Votes: votes}
@@ -51,7 +51,7 @@ func (gp *GamePool) MakeVote(gid string, dest *entities.Player, fromId, vote str
 		return fmt.Errorf("you are trying to vote for %v, while ongoing vote is against %v", dest.Name, g.Vote.DestPlayer.Name)
 	}
 
-	g.Vote.Votes[fromId] = vote
+	g.Vote.Votes.Store(fromId, vote)
 
 	// notify
 	fmt.Println("voting, waiting?", g.Vote.Waiting)
@@ -67,12 +67,13 @@ func (gp *GamePool) MakeVote(gid string, dest *entities.Player, fromId, vote str
 		} else {
 			view.WSRenderRemovePlayerWait(g.Vote.OriginPlayer.Ws, p)
 			count := 0
-			for _, vote := range g.Vote.Votes {
+			g.Vote.Votes.Range(func(k, v interface{}) bool {
 				if vote == "" {
 					count++
-					break
+					return false
 				}
-			}
+				return true
+			})
 			if count == 0 {
 				view.WSRenderAddTryAgainWait(g.Vote.OriginPlayer.Ws, gid, g.Vote.OriginPlayer.Uid, g.Vote.DestPlayer.Uid)
 			}
@@ -100,7 +101,8 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 	var no []string
 	var empty []*entities.Player
 
-	for pui, voteRes := range g.Vote.Votes {
+	g.Vote.Votes.Range(func(k, voteRes interface{}) bool {
+		pui := k.(string)
 		switch voteRes {
 		case "yes":
 			yes = append(yes, g.Players[pui].Name)
@@ -109,8 +111,8 @@ func (gp *GamePool) FinishVote(gid string, dest *entities.Player) (*entities.Vot
 		case "":
 			empty = append(empty, g.Players[pui])
 		}
-
-	}
+		return true
+	})
 
 	// tie is a fail
 	success := len(yes) > len(no)
@@ -158,11 +160,11 @@ func (gp *GamePool) CancelVote(gid string) {
 }
 
 type GamePool struct {
-	Games sync.Map
+	Games *sync.Map
 }
 
 func NewGamePool() *GamePool {
-	return &GamePool{}
+	return &GamePool{&sync.Map{}}
 }
 
 func (gp *GamePool) FindGame(gid string) (*entities.Game, error) {

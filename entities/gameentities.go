@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 type Game struct {
@@ -48,8 +49,8 @@ func NewPlayer(name string) (*Player, error) {
 type Vote struct {
 	DestPlayer   *Player
 	OriginPlayer *Player
-	Votes        map[string]string //playerid - vote (ja, nein, empty)
-	Waiting      bool              // origin player is on "wait" screen
+	Votes        *sync.Map //playerid - vote (ja, nein, empty)
+	Waiting      bool      // origin player is on "wait" screen
 }
 
 func (g *Game) AddPlayer(name string) (*Player, error) {

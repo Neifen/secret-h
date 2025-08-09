@@ -58,7 +58,8 @@ func (s *Session) initVoteHandler(c echo.Context) error {
 	if err != nil {
 		if v != nil {
 			// vote already exists
-			return view.RenderVote(c, v.OriginPlayer == originPlayer, gid, v.Votes[originPid], originPid, v.DestPlayer)
+			toggled, _ := v.Votes.Load(originPid)
+			return view.RenderVote(c, v.OriginPlayer == originPlayer, gid, toggled.(string), originPid, v.DestPlayer)
 		}
 
 		return view.RenderError(c, err)

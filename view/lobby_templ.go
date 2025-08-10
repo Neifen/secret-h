@@ -118,106 +118,111 @@ func lobby(game *entities.Game, players map[string]*entities.Player, thisPlayer 
 			if uid == thisPlayer.Uid {
 				continue
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " <li class=\"flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50\" id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			liId := fmt.Sprintf("id%s", p.Uid)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<li class=\"flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(p.Uid)
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(liId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 44, Col: 114}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 45, Col: 113}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><span class=\"text-green-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><span class=\"text-green-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(p.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 45, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 46, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span><div class=\"flex gap-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span><div class=\"flex gap-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			voteUrl := fmt.Sprintf("/vote/%s/%s/%s", game.Code, thisPlayer.Uid, p.Uid)
 			killUrl := fmt.Sprintf("/kill/%s/%s", game.Code, p.Uid)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(voteUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 49, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 50, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" hx-swap=\"none\" class=\"bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors\">Vote</button> <button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-swap=\"none\" class=\"bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors\">Vote</button> <button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(killUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 50, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 51, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-swap=\"none\" class=\"bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors\">Kill</button></div></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-swap=\"none\" class=\"bg-green-500/20 text-green-300 px-3 py-1 rounded-md border border-green-500/50 hover:bg-green-500/40 transition-colors\">Kill</button></div></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</ul></div><div class=\"text-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</ul></div><div class=\"text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		confirmUrl := fmt.Sprintf("/leave/%s/%s", game.Code, thisPlayer.Uid)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<button hx-post=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<button hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(confirmUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 58, Col: 31}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 59, Col: 31}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" hx-swap=\"none\" class=\"text-green-300 text-sm bg-gray-900/50 p-2 rounded-md border border-green-500/30 hover:bg-green-500/20 transition-colors\">> Leave Game</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-swap=\"none\" class=\"text-green-300 text-sm bg-gray-900/50 p-2 rounded-md border border-green-500/30 hover:bg-green-500/20 transition-colors\">> Leave Game</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		wsUrl := fmt.Sprintf("/ws/%s/%s", game.Code, thisPlayer.Uid)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div hx-ext=\"ws\" ws-connect=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div hx-ext=\"ws\" ws-connect=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(wsUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 61, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/lobby.templ`, Line: 62, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" hx-target=\"messages\"></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" hx-target=\"messages\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -41,7 +41,8 @@ templ lobby(game *entities.Game, players map[string]*entities.Player, thisPlayer
 					if uid == thisPlayer.Uid {
 						{{ continue }}
 					}
-					<li class="flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50" id={p.Uid}>
+                    {{liId := fmt.Sprintf("id%s",p.Uid)}}
+					<li class="flex items-center justify-between bg-gray-900 p-2 rounded-md border border-green-500/50" id={liId}>
 						<span class="text-green-300">{ p.Name }</span>
 						<div class="flex gap-2">
 							{{ voteUrl := fmt.Sprintf("/vote/%s/%s/%s", game.Code, thisPlayer.Uid, p.Uid) }}
